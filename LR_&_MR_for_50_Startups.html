@@ -1,0 +1,1943 @@
+<div class="cell code" data-execution_count="38" id="EP7O-spN72iJ">
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="im">from</span> sklearn.datasets <span class="im">import</span> fetch_california_housing</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="im">from</span> pandas.plotting <span class="im">import</span> scatter_matrix</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> r2_score</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="39" id="BzCUcuhL756n">
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>df <span class="op">=</span> pd.read_csv(<span class="st">&quot;/content/50_Startups.csv&quot;</span>)</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="40" data-colab="{&quot;height&quot;:206,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="bH3wvznz8Cgj" data-outputId="84d28cb9-7669-462b-e608-eb04dafe97c8">
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>df.head()</span></code></pre></div>
+<div class="output execute_result" data-execution_count="40">
+
+  <div id="df-9bf4e7cb-d975-4888-a551-342e33472ba1" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>R&amp;D Spend</th>
+      <th>Administration</th>
+      <th>Marketing Spend</th>
+      <th>State</th>
+      <th>Profit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>165349.20</td>
+      <td>136897.80</td>
+      <td>471784.10</td>
+      <td>New York</td>
+      <td>192261.83</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>162597.70</td>
+      <td>151377.59</td>
+      <td>443898.53</td>
+      <td>California</td>
+      <td>191792.06</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>153441.51</td>
+      <td>101145.55</td>
+      <td>407934.54</td>
+      <td>Florida</td>
+      <td>191050.39</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>144372.41</td>
+      <td>118671.85</td>
+      <td>383199.62</td>
+      <td>New York</td>
+      <td>182901.99</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>142107.34</td>
+      <td>91391.77</td>
+      <td>366168.42</td>
+      <td>Florida</td>
+      <td>166187.94</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-9bf4e7cb-d975-4888-a551-342e33472ba1')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-9bf4e7cb-d975-4888-a551-342e33472ba1 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-9bf4e7cb-d975-4888-a551-342e33472ba1');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-f54cdbf3-eaf5-4b74-b27b-ade7a8a2182c">
+  <button class="colab-df-quickchart" onclick="quickchart('df-f54cdbf3-eaf5-4b74-b27b-ade7a8a2182c')"
+            title="Suggest charts"
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+      --bg-color: #E8F0FE;
+      --fill-color: #1967D2;
+      --hover-bg-color: #E2EBFA;
+      --hover-fill-color: #174EA6;
+      --disabled-fill-color: #AAA;
+      --disabled-bg-color: #DDD;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+      --bg-color: #3B4455;
+      --fill-color: #D2E3FC;
+      --hover-bg-color: #434B5C;
+      --hover-fill-color: #FFFFFF;
+      --disabled-bg-color: #3B4455;
+      --disabled-fill-color: #666;
+  }
+
+  .colab-df-quickchart {
+    background-color: var(--bg-color);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: var(--fill-color);
+    height: 32px;
+    padding: 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: var(--hover-bg-color);
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: var(--button-hover-fill-color);
+  }
+
+  .colab-df-quickchart-complete:disabled,
+  .colab-df-quickchart-complete:disabled:hover {
+    background-color: var(--disabled-bg-color);
+    fill: var(--disabled-fill-color);
+    box-shadow: none;
+  }
+
+  .colab-df-spinner {
+    border: 2px solid var(--fill-color);
+    border-color: transparent;
+    border-bottom-color: var(--fill-color);
+    animation:
+      spin 1s steps(1) infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+      border-left-color: var(--fill-color);
+    }
+    20% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    30% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+      border-right-color: var(--fill-color);
+    }
+    40% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    60% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+    }
+    80% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-bottom-color: var(--fill-color);
+    }
+    90% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+    }
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const quickchartButtonEl =
+        document.querySelector('#' + key + ' button');
+      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
+      quickchartButtonEl.classList.add('colab-df-spinner');
+      try {
+        const charts = await google.colab.kernel.invokeFunction(
+            'suggestCharts', [key], {});
+      } catch (error) {
+        console.error('Error during call to suggestCharts:', error);
+      }
+      quickchartButtonEl.classList.remove('colab-df-spinner');
+      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-f54cdbf3-eaf5-4b74-b27b-ade7a8a2182c button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+<div class="cell code" data-execution_count="41" data-colab="{&quot;height&quot;:241,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="dnhk31w28ljA" data-outputId="b26dce58-faa0-4910-d236-7ae2e873a3ce">
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>df.isna().<span class="bu">sum</span>()</span></code></pre></div>
+<div class="output execute_result" data-execution_count="41">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>R&amp;D Spend</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Administration</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Marketing Spend</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>State</th>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>Profit</th>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div><br><label><b>dtype:</b> int64</label>
+</div>
+</div>
+<div class="cell code" data-execution_count="42" data-colab="{&quot;height&quot;:241,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="ESQ1IEDh9PJI" data-outputId="15444802-8cde-411d-c953-39757eb3d51c">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>df.dtypes</span></code></pre></div>
+<div class="output execute_result" data-execution_count="42">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>R&amp;D Spend</th>
+      <td>float64</td>
+    </tr>
+    <tr>
+      <th>Administration</th>
+      <td>float64</td>
+    </tr>
+    <tr>
+      <th>Marketing Spend</th>
+      <td>float64</td>
+    </tr>
+    <tr>
+      <th>State</th>
+      <td>object</td>
+    </tr>
+    <tr>
+      <th>Profit</th>
+      <td>float64</td>
+    </tr>
+  </tbody>
+</table>
+</div><br><label><b>dtype:</b> object</label>
+</div>
+</div>
+<div class="cell code" data-execution_count="43" data-colab="{&quot;height&quot;:300,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="4bC4LqoQ9nM7" data-outputId="cb86ea6b-8844-4136-ac94-867f83e0fcbf">
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>df.describe()</span></code></pre></div>
+<div class="output execute_result" data-execution_count="43">
+
+  <div id="df-9afb7e60-0d8a-4f95-a56a-f3f720847674" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>R&amp;D Spend</th>
+      <th>Administration</th>
+      <th>Marketing Spend</th>
+      <th>Profit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>50.000000</td>
+      <td>50.000000</td>
+      <td>50.000000</td>
+      <td>50.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>73721.615600</td>
+      <td>121344.639600</td>
+      <td>211025.097800</td>
+      <td>112012.639200</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>45902.256482</td>
+      <td>28017.802755</td>
+      <td>122290.310726</td>
+      <td>40306.180338</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.000000</td>
+      <td>51283.140000</td>
+      <td>0.000000</td>
+      <td>14681.400000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>39936.370000</td>
+      <td>103730.875000</td>
+      <td>129300.132500</td>
+      <td>90138.902500</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>73051.080000</td>
+      <td>122699.795000</td>
+      <td>212716.240000</td>
+      <td>107978.190000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>101602.800000</td>
+      <td>144842.180000</td>
+      <td>299469.085000</td>
+      <td>139765.977500</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>165349.200000</td>
+      <td>182645.560000</td>
+      <td>471784.100000</td>
+      <td>192261.830000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-9afb7e60-0d8a-4f95-a56a-f3f720847674')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-9afb7e60-0d8a-4f95-a56a-f3f720847674 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-9afb7e60-0d8a-4f95-a56a-f3f720847674');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-7baf755f-d358-4d8e-a1f3-af3843eb61c8">
+  <button class="colab-df-quickchart" onclick="quickchart('df-7baf755f-d358-4d8e-a1f3-af3843eb61c8')"
+            title="Suggest charts"
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+      --bg-color: #E8F0FE;
+      --fill-color: #1967D2;
+      --hover-bg-color: #E2EBFA;
+      --hover-fill-color: #174EA6;
+      --disabled-fill-color: #AAA;
+      --disabled-bg-color: #DDD;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+      --bg-color: #3B4455;
+      --fill-color: #D2E3FC;
+      --hover-bg-color: #434B5C;
+      --hover-fill-color: #FFFFFF;
+      --disabled-bg-color: #3B4455;
+      --disabled-fill-color: #666;
+  }
+
+  .colab-df-quickchart {
+    background-color: var(--bg-color);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: var(--fill-color);
+    height: 32px;
+    padding: 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: var(--hover-bg-color);
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: var(--button-hover-fill-color);
+  }
+
+  .colab-df-quickchart-complete:disabled,
+  .colab-df-quickchart-complete:disabled:hover {
+    background-color: var(--disabled-bg-color);
+    fill: var(--disabled-fill-color);
+    box-shadow: none;
+  }
+
+  .colab-df-spinner {
+    border: 2px solid var(--fill-color);
+    border-color: transparent;
+    border-bottom-color: var(--fill-color);
+    animation:
+      spin 1s steps(1) infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+      border-left-color: var(--fill-color);
+    }
+    20% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    30% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+      border-right-color: var(--fill-color);
+    }
+    40% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    60% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+    }
+    80% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-bottom-color: var(--fill-color);
+    }
+    90% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+    }
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const quickchartButtonEl =
+        document.querySelector('#' + key + ' button');
+      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
+      quickchartButtonEl.classList.add('colab-df-spinner');
+      try {
+        const charts = await google.colab.kernel.invokeFunction(
+            'suggestCharts', [key], {});
+      } catch (error) {
+        console.error('Error during call to suggestCharts:', error);
+      }
+      quickchartButtonEl.classList.remove('colab-df-spinner');
+      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-7baf755f-d358-4d8e-a1f3-af3843eb61c8 button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+<div class="cell code" data-execution_count="44" data-colab="{&quot;height&quot;:1000,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="KKNqFGYh_n7O" data-outputId="cbbd6dac-4063-4a8b-c5e9-c6099276ecf3">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>sns.pairplot(df)</span></code></pre></div>
+<div class="output execute_result" data-execution_count="44">
+<pre><code>&lt;seaborn.axisgrid.PairGrid at 0x7e08a18d7c40&gt;</code></pre>
+</div>
+<div class="output display_data">
+<p><img src="1bd35ec16960bd74bd932f0b7e16fe6863e0bfa7.png" /></p>
+</div>
+</div>
+<div class="cell code" data-execution_count="45" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="HfJrKRF__zyg" data-outputId="9f7fcaec-3be7-4f05-90d4-a8a3c9bf7548">
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="co"># prompt: convert state in df into 0,1,2 values</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> LabelEncoder</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>le <span class="op">=</span> LabelEncoder()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>df[<span class="st">&#39;State&#39;</span>] <span class="op">=</span> le.fit_transform(df[<span class="st">&#39;State&#39;</span>])</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="bu">print</span>(df.head())</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>   R&amp;D Spend  Administration  Marketing Spend  State     Profit
+0  165349.20       136897.80        471784.10      2  192261.83
+1  162597.70       151377.59        443898.53      0  191792.06
+2  153441.51       101145.55        407934.54      1  191050.39
+3  144372.41       118671.85        383199.62      2  182901.99
+4  142107.34        91391.77        366168.42      1  166187.94
+</code></pre>
+</div>
+</div>
+<div class="cell markdown" id="JEDnRbxlAmaD">
+<p>Here the new converted state attribute has 3 diff labels they are 0 is california , 1 is florida , 2 is New york</p>
+</div>
+<div class="cell markdown" id="pbd0dSceBZHZ">
+<p>First we are going to contruct seperate linear regressions models to predict profit in which we use one attribute to predict the target</p>
+</div>
+<div class="cell code" data-execution_count="46" data-colab="{&quot;height&quot;:853,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="IwUSWOw5BlaJ" data-outputId="bc7db902-e8a1-4213-f70f-ef2ea69ff12f">
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="co"># prompt: generate correlation heat map</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="co"># Assuming &#39;df&#39; is already defined and preprocessed as in the provided code.</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">10</span>))</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a>sns.heatmap(df.corr(), annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">&#39;coolwarm&#39;</span>, fmt<span class="op">=</span><span class="st">&quot;.2f&quot;</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a>plt.title(<span class="st">&#39;Correlation Heatmap of Features&#39;</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>plt.show()</span></code></pre></div>
+<div class="output display_data">
+<p><img src="97320e83c199ac08d65ff0e065de005cad2dca79.png" /></p>
+</div>
+</div>
+<div class="cell markdown" id="E7d7kMgwCEKC">
+<p>From this we can say that R&amp;D changes is strongly linked to changes in profit , hence for linear regression its best to choose R&amp;D as independent variable and for predicting DV - profit</p>
+</div>
+<div class="cell code" data-execution_count="47" id="p11ZFfSDB8Mt">
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>X <span class="op">=</span> df[[<span class="st">&#39;R&amp;D Spend&#39;</span>]]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>y <span class="op">=</span> df[<span class="st">&#39;Profit&#39;</span>]</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="48" id="GCW8MlA8CjK1">
+<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="49" id="8PgD2nLtCpqX">
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>lr <span class="op">=</span> LinearRegression()</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="50" data-colab="{&quot;height&quot;:80,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="LDaQtGhNCsqm" data-outputId="868d3a84-ae45-47b3-ad53-2d053075285b">
+<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a>lr.fit(X_train.values,y_train)</span></code></pre></div>
+<div class="output execute_result" data-execution_count="50">
+<style>#sk-container-id-2 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-2 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-2 pre {
+  padding: 0;
+}
+
+#sk-container-id-2 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-2 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-2 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-2 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-2 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-2 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-2 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-2 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-2 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-2 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-2 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-2 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-2 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-2 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-2 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-2 div.sk-label label.sk-toggleable__label,
+#sk-container-id-2 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-2 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-2 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-2 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-2 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-2 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-2 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-2 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-2 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-2 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;&nbsp;LinearRegression<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LinearRegression.html">?<span>Documentation for LinearRegression</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></label><div class="sk-toggleable__content fitted"><pre>LinearRegression()</pre></div> </div></div></div></div>
+</div>
+</div>
+<div class="cell code" data-execution_count="51" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="AaCOKu2qCvEG" data-outputId="a07821f5-b688-4522-8195-4a08aa0be5ed">
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a>y_pred <span class="op">=</span> lr.predict(X_test)</span></code></pre></div>
+<div class="output stream stderr">
+<pre><code>/usr/local/lib/python3.10/dist-packages/sklearn/base.py:486: UserWarning: X has feature names, but LinearRegression was fitted without feature names
+  warnings.warn(
+</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="52" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="AnniVu7pCyGv" data-outputId="128ae74f-850e-43e6-af7d-317d2d6953aa">
+<div class="sourceCode" id="cb18"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a>r2_score( y_test, y_pred)</span></code></pre></div>
+<div class="output execute_result" data-execution_count="52">
+<pre><code>0.9265108109341951</code></pre>
+</div>
+</div>
+<div class="cell markdown" id="7nEDJoWJC6NH">
+<p>About 92.7% of the changes in profit is explained by the IDV - R&amp;D spend</p>
+</div>
+<div class="cell code" data-execution_count="53" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="P_fiNnCEDE3Y" data-outputId="9d0f936d-57cf-4f0f-c88d-7b80c6b856f5">
+<div class="sourceCode" id="cb20"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="bu">print</span>(lr.intercept_)</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>49336.6680379911
+</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="54" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="3FMl8j0ODJcT" data-outputId="5dcc443b-14c4-4b87-9bfa-27ed02be5f2e">
+<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a>lr.predict(X[<span class="dv">0</span>:<span class="dv">1</span>])</span></code></pre></div>
+<div class="output stream stderr">
+<pre><code>/usr/local/lib/python3.10/dist-packages/sklearn/base.py:486: UserWarning: X has feature names, but LinearRegression was fitted without feature names
+  warnings.warn(
+</code></pre>
+</div>
+<div class="output execute_result" data-execution_count="54">
+<pre><code>array([190480.25107829])</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="55" data-colab="{&quot;height&quot;:186,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="c_FunE1JDS9g" data-outputId="603ef69d-74e0-4288-91c3-43d5ac93ab94">
+<div class="sourceCode" id="cb25"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a><span class="bu">type</span>(lr)</span></code></pre></div>
+<div class="output execute_result" data-execution_count="55">
+<div style="max-width:800px; border: 1px solid var(--colab-border-color);"><style>
+      pre.function-repr-contents {
+        overflow-x: auto;
+        padding: 8px 12px;
+        max-height: 500px;
+      }
+
+      pre.function-repr-contents.function-repr-contents-collapsed {
+        cursor: pointer;
+        max-height: 100px;
+      }
+    </style>
+    <pre style="white-space: initial; background:
+         var(--colab-secondary-surface-color); padding: 8px 12px;
+         border-bottom: 1px solid var(--colab-border-color);"><b>sklearn.linear_model._base.LinearRegression</b><br/>def __init__(*, fit_intercept=True, copy_X=True, n_jobs=None, positive=False)</pre><pre class="function-repr-contents function-repr-contents-collapsed" style=""><a class="filepath" style="display:none" href="#">/usr/local/lib/python3.10/dist-packages/sklearn/linear_model/_base.py</a>Ordinary least squares Linear Regression.
+
+LinearRegression fits a linear model with coefficients w = (w1, ..., wp)
+to minimize the residual sum of squares between the observed targets in
+the dataset, and the targets predicted by the linear approximation.
+
+Parameters
+----------
+fit_intercept : bool, default=True
+    Whether to calculate the intercept for this model. If set
+    to False, no intercept will be used in calculations
+    (i.e. data is expected to be centered).
+
+copy_X : bool, default=True
+    If True, X will be copied; else, it may be overwritten.
+
+n_jobs : int, default=None
+    The number of jobs to use for the computation. This will only provide
+    speedup in case of sufficiently large problems, that is if firstly
+    `n_targets &gt; 1` and secondly `X` is sparse or if `positive` is set
+    to `True`. ``None`` means 1 unless in a
+    :obj:`joblib.parallel_backend` context. ``-1`` means using all
+    processors. See :term:`Glossary &lt;n_jobs&gt;` for more details.
+
+positive : bool, default=False
+    When set to ``True``, forces the coefficients to be positive. This
+    option is only supported for dense arrays.
+
+    .. versionadded:: 0.24
+
+Attributes
+----------
+coef_ : array of shape (n_features, ) or (n_targets, n_features)
+    Estimated coefficients for the linear regression problem.
+    If multiple targets are passed during the fit (y 2D), this
+    is a 2D array of shape (n_targets, n_features), while if only
+    one target is passed, this is a 1D array of length n_features.
+
+rank_ : int
+    Rank of matrix `X`. Only available when `X` is dense.
+
+singular_ : array of shape (min(X, y),)
+    Singular values of `X`. Only available when `X` is dense.
+
+intercept_ : float or array of shape (n_targets,)
+    Independent term in the linear model. Set to 0.0 if
+    `fit_intercept = False`.
+
+n_features_in_ : int
+    Number of features seen during :term:`fit`.
+
+    .. versionadded:: 0.24
+
+feature_names_in_ : ndarray of shape (`n_features_in_`,)
+    Names of features seen during :term:`fit`. Defined only when `X`
+    has feature names that are all strings.
+
+    .. versionadded:: 1.0
+
+See Also
+--------
+Ridge : Ridge regression addresses some of the
+    problems of Ordinary Least Squares by imposing a penalty on the
+    size of the coefficients with l2 regularization.
+Lasso : The Lasso is a linear model that estimates
+    sparse coefficients with l1 regularization.
+ElasticNet : Elastic-Net is a linear regression
+    model trained with both l1 and l2 -norm regularization of the
+    coefficients.
+
+Notes
+-----
+From the implementation point of view, this is just plain Ordinary
+Least Squares (scipy.linalg.lstsq) or Non Negative Least Squares
+(scipy.optimize.nnls) wrapped as a predictor object.
+
+Examples
+--------
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from sklearn.linear_model import LinearRegression
+&gt;&gt;&gt; X = np.array([[1, 1], [1, 2], [2, 2], [2, 3]])
+&gt;&gt;&gt; # y = 1 * x_0 + 2 * x_1 + 3
+&gt;&gt;&gt; y = np.dot(X, np.array([1, 2])) + 3
+&gt;&gt;&gt; reg = LinearRegression().fit(X, y)
+&gt;&gt;&gt; reg.score(X, y)
+1.0
+&gt;&gt;&gt; reg.coef_
+array([1., 2.])
+&gt;&gt;&gt; reg.intercept_
+np.float64(3.0...)
+&gt;&gt;&gt; reg.predict(np.array([[3, 5]]))
+array([16.])</pre>
+      <script>
+      if (google.colab.kernel.accessAllowed && google.colab.files && google.colab.files.view) {
+        for (const element of document.querySelectorAll('.filepath')) {
+          element.style.display = 'block'
+          element.onclick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            google.colab.files.view(element.textContent, 465);
+          };
+        }
+      }
+      for (const element of document.querySelectorAll('.function-repr-contents')) {
+        element.onclick = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          element.classList.toggle('function-repr-contents-collapsed');
+        };
+      }
+      </script>
+      </div>
+</div>
+</div>
+<div class="cell code" data-execution_count="56" id="UBVqcHwlDa2Z">
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="im">import</span> pickle</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="57" id="f11vQLQeDgta">
+<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a><span class="co"># save</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;model.pkl&#39;</span>,<span class="st">&#39;wb&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true"></a>    pickle.dump(lr,f)</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="58" id="a0iKM_RsDloB">
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="co"># load</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">&#39;model.pkl&#39;</span>, <span class="st">&#39;rb&#39;</span>) <span class="im">as</span> f:</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true"></a>    clf2 <span class="op">=</span> pickle.load(f)</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="59" data-colab="{&quot;height&quot;:206,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="8RTVjW-FDoJ3" data-outputId="ffdb6de5-1d57-4472-b38d-5f67085a812e">
+<div class="sourceCode" id="cb29"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a>X[<span class="dv">0</span>:<span class="dv">5</span>]</span></code></pre></div>
+<div class="output execute_result" data-execution_count="59">
+
+  <div id="df-94a494c8-bd8b-464e-8e52-ed0a0a229d19" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>R&amp;D Spend</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>165349.20</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>162597.70</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>153441.51</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>144372.41</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>142107.34</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-94a494c8-bd8b-464e-8e52-ed0a0a229d19')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-94a494c8-bd8b-464e-8e52-ed0a0a229d19 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-94a494c8-bd8b-464e-8e52-ed0a0a229d19');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-9a953f02-d010-41d8-896a-e62a791cea1c">
+  <button class="colab-df-quickchart" onclick="quickchart('df-9a953f02-d010-41d8-896a-e62a791cea1c')"
+            title="Suggest charts"
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+      --bg-color: #E8F0FE;
+      --fill-color: #1967D2;
+      --hover-bg-color: #E2EBFA;
+      --hover-fill-color: #174EA6;
+      --disabled-fill-color: #AAA;
+      --disabled-bg-color: #DDD;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+      --bg-color: #3B4455;
+      --fill-color: #D2E3FC;
+      --hover-bg-color: #434B5C;
+      --hover-fill-color: #FFFFFF;
+      --disabled-bg-color: #3B4455;
+      --disabled-fill-color: #666;
+  }
+
+  .colab-df-quickchart {
+    background-color: var(--bg-color);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: var(--fill-color);
+    height: 32px;
+    padding: 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: var(--hover-bg-color);
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: var(--button-hover-fill-color);
+  }
+
+  .colab-df-quickchart-complete:disabled,
+  .colab-df-quickchart-complete:disabled:hover {
+    background-color: var(--disabled-bg-color);
+    fill: var(--disabled-fill-color);
+    box-shadow: none;
+  }
+
+  .colab-df-spinner {
+    border: 2px solid var(--fill-color);
+    border-color: transparent;
+    border-bottom-color: var(--fill-color);
+    animation:
+      spin 1s steps(1) infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+      border-left-color: var(--fill-color);
+    }
+    20% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    30% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+      border-right-color: var(--fill-color);
+    }
+    40% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    60% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+    }
+    80% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-bottom-color: var(--fill-color);
+    }
+    90% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+    }
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const quickchartButtonEl =
+        document.querySelector('#' + key + ' button');
+      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
+      quickchartButtonEl.classList.add('colab-df-spinner');
+      try {
+        const charts = await google.colab.kernel.invokeFunction(
+            'suggestCharts', [key], {});
+      } catch (error) {
+        console.error('Error during call to suggestCharts:', error);
+      }
+      quickchartButtonEl.classList.remove('colab-df-spinner');
+      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-9a953f02-d010-41d8-896a-e62a791cea1c button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+<div class="cell code" data-execution_count="60" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="lRSUb5pzDqnI" data-outputId="30ea5244-f833-4b1a-b1f2-77bcb1dfe8d1">
+<div class="sourceCode" id="cb30"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a>clf2.predict(X[<span class="dv">0</span>:<span class="dv">5</span>])</span></code></pre></div>
+<div class="output stream stderr">
+<pre><code>/usr/local/lib/python3.10/dist-packages/sklearn/base.py:486: UserWarning: X has feature names, but LinearRegression was fitted without feature names
+  warnings.warn(
+</code></pre>
+</div>
+<div class="output execute_result" data-execution_count="60">
+<pre><code>array([190480.25107829, 188131.54561896, 180315.73844483, 172574.27208786,
+       170640.7877067 ])</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="61" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="2P6t2xHNDuUM" data-outputId="4e9449c8-a694-4b27-a4f8-0e9243f85ba9">
+<div class="sourceCode" id="cb33"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a><span class="co"># Display the first few predictions alongside the actual values</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true"></a>predictions <span class="op">=</span> pd.DataFrame({<span class="st">&#39;Actual&#39;</span>: y_test, <span class="st">&#39;Predicted&#39;</span>: y_pred})</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true"></a><span class="bu">print</span>(predictions.head())</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>       Actual      Predicted
+13  134307.35  127862.209964
+39   81005.76   82250.563346
+30   99937.59  102255.720782
+45   64926.08   50190.473476
+17  125370.37  130136.881905
+</code></pre>
+</div>
+</div>
+<div class="cell markdown" id="Q--XPwcKD-af">
+<p>We see that the linear regression model predicts the value fairly accurately with deviation about 5% or lesser for most of the prediction</p>
+</div>
+<div class="cell code" data-execution_count="62" data-colab="{&quot;height&quot;:564,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="ANyK1Lh7EPTX" data-outputId="e41b2a8c-cd38-4018-c162-803ee5bb4dec">
+<div class="sourceCode" id="cb35"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a><span class="co"># prompt: plot a scatter plot between predicted and actual values</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true"></a><span class="co"># Assuming &#39;predictions&#39; DataFrame is already created as in the previous code.</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true"></a>plt.scatter(predictions[<span class="st">&#39;Actual&#39;</span>], predictions[<span class="st">&#39;Predicted&#39;</span>])</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true"></a>plt.xlabel(<span class="st">&#39;Actual Values&#39;</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true"></a>plt.ylabel(<span class="st">&#39;Predicted Values&#39;</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true"></a>plt.title(<span class="st">&#39;Actual vs. Predicted Values&#39;</span>)</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true"></a>plt.plot([<span class="bu">min</span>(predictions[<span class="st">&#39;Actual&#39;</span>]), <span class="bu">max</span>(predictions[<span class="st">&#39;Actual&#39;</span>])], [<span class="bu">min</span>(predictions[<span class="st">&#39;Actual&#39;</span>]), <span class="bu">max</span>(predictions[<span class="st">&#39;Actual&#39;</span>])], color<span class="op">=</span><span class="st">&#39;red&#39;</span>)  <span class="co"># Add a diagonal line</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true"></a>plt.show()</span></code></pre></div>
+<div class="output display_data">
+<p><img src="6984bd3752914b40d058bcffb4ef0895ab976fb4.png" /></p>
+</div>
+</div>
+<div class="cell markdown" id="oBROC92ZEvch">
+<p>The actual and predicted values are almost linear , hence this is a fairly decent model for predicting the profit</p>
+</div>
+<div class="cell markdown" id="7kJV6SM2GW1G">
+<p>Multiple regression</p>
+</div>
+<div class="cell code" data-execution_count="63" id="vL30uWy9E5WY">
+<div class="sourceCode" id="cb36"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a>X1 <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">&#39;Profit&#39;</span>])</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true"></a>y1 <span class="op">=</span> df[<span class="st">&#39;Profit&#39;</span>]</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="64" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="GfnOZU69F9lp" data-outputId="23007e5a-8335-4bc3-b07c-e5cc17cbeff7">
+<div class="sourceCode" id="cb37"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of X1:&quot;</span>, X1.shape)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of y1:&quot;</span>, y1.shape)</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>Shape of X1: (50, 4)
+Shape of y1: (50,)
+</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="65" id="KA7IJa4gGDpF">
+<div class="sourceCode" id="cb39"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true"></a>X1 <span class="op">=</span> X1.values</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true"></a>y1 <span class="op">=</span> y1.values</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="66" id="Nq3OA06vGM_R">
+<div class="sourceCode" id="cb40"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a>X1_train, X1_test, y1_train, y1_test <span class="op">=</span> train_test_split(X1, y1, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code></pre></div>
+</div>
+<div class="cell code" data-execution_count="67" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="bj9T26rvGTrR" data-outputId="6a134555-b60c-420a-8bd1-7af648aaf6fc">
+<div class="sourceCode" id="cb41"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of X1:&quot;</span>, X1_train.shape)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of y1:&quot;</span>, y1_train.shape)</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>Shape of X1: (40, 4)
+Shape of y1: (40,)
+</code></pre>
+</div>
+</div>
+<div class="cell markdown" id="3pktQaWXGhmn">
+<p>80% of the train data i.e 40 datas out of the 50 are taken for trainning due to text split being 20% i,.e 10 datas out 0f 50</p>
+</div>
+<div class="cell code" data-execution_count="68" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="BjfR2MbUGgxz" data-outputId="25b32d78-a8be-4db2-c8c7-fc2175708799">
+<div class="sourceCode" id="cb43"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true"></a><span class="co"># =======================================</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true"></a><span class="co"># Multiple Linear Regression</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true"></a><span class="co"># =======================================</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_squared_error, r2_score</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true"></a>model_multiple <span class="op">=</span> LinearRegression()</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true"></a></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true"></a><span class="co"># Train the model</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true"></a>model_multiple.fit(X1_train, y1_train)</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true"></a></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true"></a>y1_pred_multiple <span class="op">=</span> model_multiple.predict(X1_test)</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true"></a></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true"></a>mse_multiple <span class="op">=</span> mean_squared_error(y1_test, y1_pred_multiple)</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true"></a>r2_multiple <span class="op">=</span> r2_score(y1_test, y1_pred_multiple)</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true"></a></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Multiple Linear Regression&quot;</span>)</span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  Mean Squared Error: </span><span class="sc">{</span>mse_multiple<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  R² Score: </span><span class="sc">{</span>r2_multiple<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>
+Multiple Linear Regression
+  Mean Squared Error: 80929465.4910
+  R² Score: 0.9001
+</code></pre>
+</div>
+</div>
+<div class="cell markdown" id="IaQ2MusTIToh">
+<p>About 90% changes in target variable profit can be explained by the 4 IDVs</p>
+</div>
+<div class="cell code" data-execution_count="69" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="FPITGY7ZHSa8" data-outputId="b9ee0383-0bef-416d-c834-c29891baa93f">
+<div class="sourceCode" id="cb45"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true"></a><span class="bu">print</span>(model_multiple.intercept_)</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>54080.71684611377
+</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="70" data-colab="{&quot;height&quot;:186,&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="xkGFdgKOIgOF" data-outputId="86a67a0d-8e4b-4577-d21f-8852ef8fdec9">
+<div class="sourceCode" id="cb47"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true"></a><span class="bu">type</span>(model_multiple)</span></code></pre></div>
+<div class="output execute_result" data-execution_count="70">
+<div style="max-width:800px; border: 1px solid var(--colab-border-color);"><style>
+      pre.function-repr-contents {
+        overflow-x: auto;
+        padding: 8px 12px;
+        max-height: 500px;
+      }
+
+      pre.function-repr-contents.function-repr-contents-collapsed {
+        cursor: pointer;
+        max-height: 100px;
+      }
+    </style>
+    <pre style="white-space: initial; background:
+         var(--colab-secondary-surface-color); padding: 8px 12px;
+         border-bottom: 1px solid var(--colab-border-color);"><b>sklearn.linear_model._base.LinearRegression</b><br/>def __init__(*, fit_intercept=True, copy_X=True, n_jobs=None, positive=False)</pre><pre class="function-repr-contents function-repr-contents-collapsed" style=""><a class="filepath" style="display:none" href="#">/usr/local/lib/python3.10/dist-packages/sklearn/linear_model/_base.py</a>Ordinary least squares Linear Regression.
+
+LinearRegression fits a linear model with coefficients w = (w1, ..., wp)
+to minimize the residual sum of squares between the observed targets in
+the dataset, and the targets predicted by the linear approximation.
+
+Parameters
+----------
+fit_intercept : bool, default=True
+    Whether to calculate the intercept for this model. If set
+    to False, no intercept will be used in calculations
+    (i.e. data is expected to be centered).
+
+copy_X : bool, default=True
+    If True, X will be copied; else, it may be overwritten.
+
+n_jobs : int, default=None
+    The number of jobs to use for the computation. This will only provide
+    speedup in case of sufficiently large problems, that is if firstly
+    `n_targets &gt; 1` and secondly `X` is sparse or if `positive` is set
+    to `True`. ``None`` means 1 unless in a
+    :obj:`joblib.parallel_backend` context. ``-1`` means using all
+    processors. See :term:`Glossary &lt;n_jobs&gt;` for more details.
+
+positive : bool, default=False
+    When set to ``True``, forces the coefficients to be positive. This
+    option is only supported for dense arrays.
+
+    .. versionadded:: 0.24
+
+Attributes
+----------
+coef_ : array of shape (n_features, ) or (n_targets, n_features)
+    Estimated coefficients for the linear regression problem.
+    If multiple targets are passed during the fit (y 2D), this
+    is a 2D array of shape (n_targets, n_features), while if only
+    one target is passed, this is a 1D array of length n_features.
+
+rank_ : int
+    Rank of matrix `X`. Only available when `X` is dense.
+
+singular_ : array of shape (min(X, y),)
+    Singular values of `X`. Only available when `X` is dense.
+
+intercept_ : float or array of shape (n_targets,)
+    Independent term in the linear model. Set to 0.0 if
+    `fit_intercept = False`.
+
+n_features_in_ : int
+    Number of features seen during :term:`fit`.
+
+    .. versionadded:: 0.24
+
+feature_names_in_ : ndarray of shape (`n_features_in_`,)
+    Names of features seen during :term:`fit`. Defined only when `X`
+    has feature names that are all strings.
+
+    .. versionadded:: 1.0
+
+See Also
+--------
+Ridge : Ridge regression addresses some of the
+    problems of Ordinary Least Squares by imposing a penalty on the
+    size of the coefficients with l2 regularization.
+Lasso : The Lasso is a linear model that estimates
+    sparse coefficients with l1 regularization.
+ElasticNet : Elastic-Net is a linear regression
+    model trained with both l1 and l2 -norm regularization of the
+    coefficients.
+
+Notes
+-----
+From the implementation point of view, this is just plain Ordinary
+Least Squares (scipy.linalg.lstsq) or Non Negative Least Squares
+(scipy.optimize.nnls) wrapped as a predictor object.
+
+Examples
+--------
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from sklearn.linear_model import LinearRegression
+&gt;&gt;&gt; X = np.array([[1, 1], [1, 2], [2, 2], [2, 3]])
+&gt;&gt;&gt; # y = 1 * x_0 + 2 * x_1 + 3
+&gt;&gt;&gt; y = np.dot(X, np.array([1, 2])) + 3
+&gt;&gt;&gt; reg = LinearRegression().fit(X, y)
+&gt;&gt;&gt; reg.score(X, y)
+1.0
+&gt;&gt;&gt; reg.coef_
+array([1., 2.])
+&gt;&gt;&gt; reg.intercept_
+np.float64(3.0...)
+&gt;&gt;&gt; reg.predict(np.array([[3, 5]]))
+array([16.])</pre>
+      <script>
+      if (google.colab.kernel.accessAllowed && google.colab.files && google.colab.files.view) {
+        for (const element of document.querySelectorAll('.filepath')) {
+          element.style.display = 'block'
+          element.onclick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            google.colab.files.view(element.textContent, 465);
+          };
+        }
+      }
+      for (const element of document.querySelectorAll('.function-repr-contents')) {
+        element.onclick = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          element.classList.toggle('function-repr-contents-collapsed');
+        };
+      }
+      </script>
+      </div>
+</div>
+</div>
+<div class="cell code" data-execution_count="72" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="bJ6LciCLIkEe" data-outputId="3d022bd0-06c9-43c3-f0d3-579ade684254">
+<div class="sourceCode" id="cb48"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true"></a>model_multiple.predict(X1[<span class="dv">0</span>:<span class="dv">5</span>])</span></code></pre></div>
+<div class="output execute_result" data-execution_count="72">
+<pre><code>array([192405.36723938, 188372.32164914, 183282.8185662 , 174012.86095334,
+       173529.22121764])</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="73" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="jyZjzYtHIo44" data-outputId="1a0c0729-df63-43ee-b42e-8d317b2a40f8">
+<div class="sourceCode" id="cb50"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true"></a><span class="co"># Display the first few predictions alongside the actual values</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true"></a>predictions <span class="op">=</span> pd.DataFrame({<span class="st">&#39;Actual&#39;</span>: y_test, <span class="st">&#39;Predicted&#39;</span>: y_pred_multiple})</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true"></a><span class="bu">print</span>(predictions.head())</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>       Actual      Predicted
+13  134307.35  126720.661507
+39   81005.76   84909.089619
+30   99937.59   98890.318549
+45   64926.08   46479.312402
+17  125370.37  129113.183188
+</code></pre>
+</div>
+</div>
+<div class="cell markdown" id="Y5jUL2eHIuuI">
+<p>For some values the deviation between predicted and actual values is lesser compared to the linear regression model but for some the deviation is also higher</p>
+</div>
+<div class="cell code" data-execution_count="75" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="czLcvQ-4I_rS" data-outputId="6d1f7a75-29e3-4805-c045-ed95c05608e4">
+<div class="sourceCode" id="cb52"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true"></a>X2 <span class="op">=</span> df.drop(columns<span class="op">=</span>[<span class="st">&#39;Profit&#39;</span>, <span class="st">&#39;State&#39;</span>, <span class="st">&#39;Administration&#39;</span>])</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true"></a>y2 <span class="op">=</span> df[<span class="st">&#39;Profit&#39;</span>]</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of X2:&quot;</span>, X2.shape)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of y2:&quot;</span>, y2.shape)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true"></a>X2 <span class="op">=</span> X2.values</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true"></a>y2 <span class="op">=</span> y2.values</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true"></a>X2_train, X2_test, y2_train, y2_test <span class="op">=</span> train_test_split(X2, y2, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of X2:&quot;</span>, X2_train.shape)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;Shape of y2:&quot;</span>, y2_train.shape)</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>Shape of X2: (50, 2)
+Shape of y2: (50,)
+Shape of X2: (40, 2)
+Shape of y2: (40,)
+</code></pre>
+</div>
+</div>
+<div class="cell code" data-execution_count="77" data-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}" id="KNcy3cndKJBX" data-outputId="0d9b6a0c-dd95-4646-e41b-cd59ea4a5569">
+<div class="sourceCode" id="cb54"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true"></a><span class="co"># =======================================</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true"></a><span class="co"># Multiple Linear Regression 2</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true"></a><span class="co"># =======================================</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true"></a></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true"></a>model_multiple <span class="op">=</span> LinearRegression()</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true"></a></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true"></a><span class="co"># Train the model</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true"></a>model_multiple.fit(X2_train, y2_train)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true"></a></span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true"></a>y2_pred_multiple <span class="op">=</span> model_multiple.predict(X2_test)</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true"></a></span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true"></a>mse_multiple <span class="op">=</span> mean_squared_error(y2_test, y2_pred_multiple)</span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true"></a>r2_multiple <span class="op">=</span> r2_score(y2_test, y2_pred_multiple)</span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true"></a></span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true"></a><span class="bu">print</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Multiple Linear Regression 2&quot;</span>)</span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  Mean Squared Error: </span><span class="sc">{</span>mse_multiple<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true"></a><span class="bu">print</span>(<span class="ss">f&quot;  R² Score: </span><span class="sc">{</span>r2_multiple<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<div class="output stream stdout">
+<pre><code>
+Multiple Linear Regression 2
+  Mean Squared Error: 67343832.5898
+  R² Score: 0.9168
+</code></pre>
+</div>
+</div>
+<div class="cell markdown" id="mbheGUYtKdIs">
+<p>This multiple regression model has lesser mean squarev error and higher R2 score but still falls short of the explaintary power of linear regression model whose r2 score &gt; 92%</p>
+</div>
+<div class="cell markdown" id="hEEmjSAbKwy9">
+<p>Based on the 3 models created , we can say that the linear regession model is the best one for accurate prediction followed by multiple regression model 2 , then multiple regression model 1</p>
+</div>
+<div class="cell code" id="gX2EkaPfLK8h">
+<div class="sourceCode" id="cb56"><pre class="sourceCode python"><code class="sourceCode python"></code></pre></div>
+</div>
